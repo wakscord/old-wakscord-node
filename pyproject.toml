@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "wakscord-node"
+version = "0.1.0"
+description = "new wakscord node"
+authors = ["deploybg <serltretu24@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+aiohttp = "^3.8.3"
+aiohttp-swagger = {extras = ["performance"], version = "^1.0.16"}
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
