@@ -18,14 +18,17 @@ logger = CustomHandler.development(__name__)
 
 
 class NodeServer(web.Application):
+    __slots__ = (
+        "requester",
+        "metadata",
+    )
+
     def __init__(self):
         super().__init__()
         self.requester: MultiRequester = MultiRequester()
         self.metadata: Dict[str, str] = json.load(open(".config/metadata.json"))
 
     async def node_info_json(self, _request: web.Request) -> web.Response:
-        __exception_staticmethod_error = self
-
         return web.json_response(
             data={
                 "version": str(__version__),
@@ -42,8 +45,6 @@ class NodeServer(web.Application):
         )
 
     async def node_info_html(self, _request: web.Request) -> web.Response:
-        __exception_staticmethod_error = self
-
         return web.Response(
             text="<h1>Wakscord Node</h1>\n"
             f"<h2>{self.metadata['name']}</h3>\n"
@@ -53,8 +54,6 @@ class NodeServer(web.Application):
         )
 
     async def log_viewer(self, request: web.Request) -> web.FileResponse:
-        __exception_staticmethod_error = self
-
         if request.headers.get("X-Wakscord-Key") != os.getenv("ACCESS_KEY"):
             raise web.HTTPUnauthorized(
                 body=json.dumps({"required": {"headers": "X-Wakscord-Key"}}),
@@ -147,7 +146,7 @@ class NodeServer(web.Application):
 
         await self.requester.queue.stop(task_id)
         return web.Response(text="")
-    
+
     async def _request_process(self):
         try:
             await self.requester.process()
@@ -167,7 +166,7 @@ class NodeServer(web.Application):
                     traceback.format_exc(),
                 )
 
-            for task_id, data in self.requester.queue.internal_queue.items():
+            for task_id, data in self.requester.queue.internal_queue.copy().items():
                 data["created_at"]: datetime.datetime
 
                 timedelta: datetime.timedelta = (

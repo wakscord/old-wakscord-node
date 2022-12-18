@@ -1,3 +1,4 @@
+import platform
 import asyncio
 import logging
 import os
@@ -9,11 +10,7 @@ from app import NodeServer, __version__
 from log_handler import CustomHandler
 
 load_dotenv(dotenv_path=".config/.env")
-logger = CustomHandler.development("main", file_name="main.txt")
-
-
-async def run(app: web.Application):
-    web.run_app(app, host=str(os.getenv("HOST")), port=int(os.getenv("PORT")))
+logger = CustomHandler.development("main")
 
 
 def main():
@@ -37,6 +34,11 @@ __          __     _  __ _____  _____ ____  _____  _____
     print(
         f"\033[1;32;40m [metadata] name: {app.metadata['name']} | owner: {app.metadata.get('owner', 'anonymous')}\033[0m"
     )
+
+    if platform.system() != "Windows":
+        import uvloop
+
+        asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
     loop = asyncio.new_event_loop()
     runner = web.AppRunner(app)

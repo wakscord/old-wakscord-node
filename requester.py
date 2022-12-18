@@ -1,11 +1,9 @@
 import asyncio
 from errors import (
-    NodeException,
     HTTPException,
     Forbidden,
     DiscordServerError,
     BannedByCloudflareError,
-    BadRequest,
     WebhookDeletedError,
     ERROR_MAPPING,
 )
@@ -16,9 +14,9 @@ import traceback
 
 from task_queue import TaskQueue
 from log_handler import CustomHandler
-from utils import generate_unique_code
+from utils import generate_unique_code, get_token_by_webhook
 
-logger = CustomHandler.development(__name__)
+logger = CustomHandler.production_info_level(__name__)
 deleted_webhooks_logger = CustomHandler.file_writer(
     "Deleted Webhooks Collector", file_name="deleted_webhooks.txt"
 )
@@ -40,6 +38,12 @@ async def json_or_text(response: aiohttp.ClientResponse) -> Union[Dict[str, Any]
 
 
 class MultiRequester:
+    __slots__ = (
+        "_session",
+        "queue",
+        "_global_limit",
+    )
+
     def __init__(self):
         self._session: Optional[aiohttp.ClientSession] = None
         self.queue: TaskQueue = TaskQueue()
@@ -81,11 +85,7 @@ class MultiRequester:
                 webhook_token=url,
                 data={
                     "code": ERROR_MAPPING.get(
-                        getattr(
-                            e,
-                            "error",
-                            BadRequest,
-                        ),
+                        type(e).__name__,
                         2027,
                     ),
                     "message": str(e),
@@ -110,7 +110,7 @@ class MultiRequester:
             try:
                 async with self._session.post(url, json=json_data) as response:
                     logger.debug(
-                        "Discord with %s has returned %s", url, response.status
+                        "Discord with %s has returned %s", get_token_by_webhook(url), response.status
                     )
 
                     data = await json_or_text(response)
@@ -124,8 +124,8 @@ class MultiRequester:
                                 )
 
                     if 300 > response.status >= 200:
-                        logger.debug("Requester with %s has received %s", url, data)
-                        logger.debug("Successfully sent data with webhook %s", url)
+                        logger.debug("Requester with %s has received %s", get_token_by_webhook(url), data)
+                        logger.debug("Successfully sent data with webhook %s", get_token_by_webhook(url))
                         await self.queue.set_success(task_id=task_id, webhook_token=url)
                         return
 
@@ -140,7 +140,7 @@ class MultiRequester:
                         retry_after: float = data["retry_after"]
                         logger.warning(
                             "We are being rate limited. Discord with %s responded with 429. Retrying in %.2f seconds.",
-                            url,
+                            get_token_by_webhook(url),
                             retry_after,
                         )
 
@@ -168,14 +168,10 @@ class MultiRequester:
 
                     # we've received a 401 or 404, webhook deleted
                     if response.status in {401, 404}:
-                        logger.error(
-                            "This webhook (%s) has been deleted or cannot be found.",
-                            url,
-                        )
                         deleted_webhooks_logger.info(url)
                         raise WebhookDeletedError(
                             code=404,
-                            message=f"This webhook ({url}) has been deleted or cannot be found.",
+                            message=f"This webhook ({get_token_by_webhook(url)}) has been deleted or cannot be found.",
                         )
 
                     if response.status == 403:

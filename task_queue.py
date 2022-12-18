@@ -12,6 +12,8 @@ STATUS_MAPPING: Dict[str, int] = {
 
 
 class TaskQueue:
+    __slots__ = ("internal_queue",)
+
     def __init__(self) -> None:
         self.internal_queue: OrderedDict = OrderedDict()
 
