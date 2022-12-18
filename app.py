@@ -147,6 +147,12 @@ class NodeServer(web.Application):
 
         await self.requester.queue.stop(task_id)
         return web.Response(text="")
+    
+    async def _request_process(self):
+        try:
+            await self.requester.process()
+        except (StopIteration, StopAsyncIteration, RuntimeError) as _e:
+            pass
 
     async def requester_loop(self):
         logger.info("Requester loop started running.")
@@ -154,7 +160,7 @@ class NodeServer(web.Application):
             await asyncio.sleep(1)
 
             try:
-                asyncio.create_task(self.requester.process())
+                asyncio.create_task(self._request_process())
             except NodeException as _e:
                 logger.error(
                     "An error occurred while executing the actions.\n%s",
