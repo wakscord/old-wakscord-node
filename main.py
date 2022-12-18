@@ -4,7 +4,6 @@ import os
 
 from aiohttp import web
 from dotenv import load_dotenv
-from aiohttp_swagger import setup_swagger
 
 from app import NodeServer, __version__
 from log_handler import CustomHandler
@@ -21,15 +20,6 @@ def main():
     app = NodeServer()
 
     app.setup_routers()
-    if os.getenv("GENERATE_SWAGGGER_DOCS", "FALSE") is "TRUE":
-        setup_swagger(
-            app,
-            swagger_url="/swagger-docs",
-            ui_version=3,
-            title="Wakscord Node API",
-            description="왁스코드 노드 API 문서입니다",
-            api_version=__version__,
-        )
     logging.basicConfig(level=logging.DEBUG)
     print(
         """\033[1;32;40m
