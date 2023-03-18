@@ -11,5 +11,4 @@ class Message:
         self.keys = data["keys"]
 
     def get(self, chunk: int) -> list[list[Any]]:
-        # pylint: disable=line-too-long
         return [list(key for key in lst) for lst in list_chunk(self.keys, chunk)]
