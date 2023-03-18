@@ -1,12 +1,14 @@
 import os
 
+from .utils import to_int
+
 KEY = os.getenv("KEY", "wakscord")
 
 HOST = os.getenv("HOST", "0.0.0.0")
-PORT = os.getenv("PORT", 3000)
+PORT = to_int(os.getenv("PORT"), 3000)
 
-IDX = os.getenv("IDX", 1)
-OWNER = os.getenv("OWNER", "?")
+ID = to_int(os.getenv("ID"), 1)
+OWNER = os.getenv("OWNER", "Unknown")
 
-MAX_CONCURRENT = os.getenv("MAX_CONCURRENT", 500)
-WAIT_CONCURRENT = os.getenv("WAIT_CONCURRENT", 0)
+MAX_CONCURRENT = to_int(os.getenv("MAX_CONCURRENT"), 500)
+WAIT_CONCURRENT = to_int(os.getenv("WAIT_CONCURRENT"), 0)

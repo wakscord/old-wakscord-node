@@ -21,7 +21,7 @@ def main():
 
     logger.info(f"Starting Wakscord Node on {HOST}:{PORT}")
 
-    logger.info(f"Node ID: {IDX}")
+    logger.info(f"Node ID: {ID}")
     logger.info(f"Node Owner: {OWNER}")
     logger.info(f"MAX_CONCURRENT: {MAX_CONCURRENT}")
     logger.info(f"WAIT_CONCURRENT: {WAIT_CONCURRENT}")
