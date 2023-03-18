@@ -50,8 +50,6 @@ class WakscordNode(web.Application):
 
         data["keys"] = _keys
 
-        print(data)
-
         message = Message(data)
 
         await self.task_manager.add_message(message)
