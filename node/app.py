@@ -71,7 +71,6 @@ class WakscordNode(web.Application):
     async def route_get_deleted_webhooks(self, _: web.Request) -> web.Response:
         return web.json_response(self.deleted_webhooks)
 
-    # pylint: disable=line-too-long
     async def route_delete_deleted_webhooks(self, _: web.Request) -> web.Response:
         self.deleted_webhooks = []
 
@@ -88,7 +87,6 @@ class WakscordNode(web.Application):
             self.deleted_webhooks.append(key)
 
     def setup_routers(self):
-        # pylint: disable=line-too-long
         self.router.add_get("/", self.route_index)
         self.router.add_post("/request", self.route_request)
         self.router.add_get("/deletedWebhooks", self.route_get_deleted_webhooks)
