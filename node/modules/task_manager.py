@@ -8,8 +8,8 @@ from requester import Requester
 
 
 class TaskManager:
-    """Represents storing and managing requests for modules.requester.Request
-    """
+    """Represents storing and managing requests for modules.requester.Request"""
+
     def __init__(self, deleted_hook: Callable):
         self._deleted_hook = deleted_hook
 

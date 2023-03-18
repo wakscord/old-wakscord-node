@@ -21,6 +21,7 @@ class WakscordNode(web.Application):
 
     All requests will go through this class and will forward the action.
     """
+
     def __init__(self):
         super().__init__()
 
