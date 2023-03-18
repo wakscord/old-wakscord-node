@@ -1,18 +1,18 @@
 import asyncio
-from typing import Callable
+from typing import Callable, Optional
 
 import aiohttp
 
 
 class Requester:
-    """Represents Discord Webhook request sender for wakscord data.
-    """
+    """Represents Discord Webhook request sender for wakscord data."""
+
     def __init__(self, keys: list[str], data: str, deleted_hook: Callable):
         self.keys = keys
         self.data = data
         self.deleted_hook = deleted_hook
 
-        self.session: aiohttp.ClientSession = None
+        self.session: Optional[aiohttp.ClientSession] = None
 
     async def request(self):
         self.session = aiohttp.ClientSession()
