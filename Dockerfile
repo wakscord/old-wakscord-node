@@ -1,6 +1,6 @@
 FROM python:3.11.2-slim
 
-RUN apt-get update && apt-get upgrade -y && apt-get install gcc
+RUN apt-get update && apt-get upgrade -y && apt-get install gcc -y
 
 COPY ./requirements.txt /app/requirements.txt
 
