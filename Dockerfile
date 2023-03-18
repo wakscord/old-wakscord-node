@@ -1,7 +1,7 @@
 FROM python:3.11.2-slim
 
-RUN apt-get update && apt-get upgrade -y && apt-get install gcc -y
-RUN pip install -U pip
+RUN apt-get update && apt-get upgrade -y && apt-get install g++ -y
+RUN pip install -U setuptools pip
 
 COPY ./requirements.txt /app/requirements.txt
 
