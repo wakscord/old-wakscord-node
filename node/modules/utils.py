@@ -5,5 +5,5 @@ def list_chunk(lst, n):
 def to_int(value, default=0):
     try:
         return int(value)
-    except ValueError:
+    except (ValueError, TypeError):
         return default

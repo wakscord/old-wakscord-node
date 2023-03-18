@@ -5,6 +5,8 @@ import aiohttp
 
 
 class Requester:
+    """Represents Discord Webhook request sender for wakscord data.
+    """
     def __init__(self, keys: list[str], data: str, deleted_hook: Callable):
         self.keys = keys
         self.data = data
