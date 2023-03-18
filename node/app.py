@@ -42,6 +42,15 @@ class WakscordNode(web.Application):
             )
 
         data = await request.json()
+        _keys = data["keys"]
+
+        for key in data["keys"]:
+            if key in self.deleted_webhooks:
+                _keys.remove(key)
+
+        data["keys"] = _keys
+
+        print(data)
 
         message = Message(data)
 
