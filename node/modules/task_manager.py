@@ -5,7 +5,6 @@ from typing import Callable
 from .env import MAX_CONCURRENT, WAIT_CONCURRENT
 from .message import Message
 from .requester import Requester
-from .utils import list_chunk
 
 
 class TaskManager:
@@ -31,7 +30,7 @@ class TaskManager:
         message: Message = await self._message_queue.get()
 
         data = json.dumps(message.data)
-        for chunk in list_chunk(message.keys, MAX_CONCURRENT):
+        for chunk in message.get(MAX_CONCURRENT):
             requester = Requester(chunk, data, self._deleted_hook)
 
             await self._task_queue.put(requester.request())
