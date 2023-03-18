@@ -19,8 +19,6 @@ def main():
 
     app.setup_routers()
 
-    envs = [KEY, HOST, PORT, IDX, OWNER, MAX_CONCURRENT, WAIT_CONCURRENT]
-
     logger.info(f"Starting Wakscord Node on {HOST}:{PORT}")
 
     logger.info(f"Node ID: {IDX}")

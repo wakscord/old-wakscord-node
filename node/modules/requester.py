@@ -18,6 +18,7 @@ class Requester:
         actions = [self.__request(key) for key in self.keys]
 
         await asyncio.gather(*actions)
+        await self.session.close()
 
     async def __request(
         self,
@@ -29,11 +30,25 @@ class Requester:
 
         if retry:
             await asyncio.sleep(retry * 10)
+            session = aiohttp.ClientSession()
+        else:
+            session = self.session
 
-        async with self.session.post(
+        async with session.post(
             f"https://discord.com/api/webhooks/{key}",
             data=self.data,
             headers={"Content-Type": "application/json"},
         ) as response:
+            if response.status == 404:
+                return self.deleted_hook(key)
+
             if response.status == 429:
-                asyncio.create_task()
+                asyncio.create_task(
+                    self.__request(
+                        key,
+                        retry=retry + 1,
+                    )
+                )
+
+        if retry:
+            await session.close()
