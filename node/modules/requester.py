@@ -30,8 +30,6 @@ class Requester:
         self._global_limit.set()
 
     async def request(self):
-        self.session = aiohttp.ClientSession()
-
         actions = [self._request(key) for key in self.keys]
 
         await asyncio.gather(*actions)
