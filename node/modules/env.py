@@ -1,6 +1,6 @@
 import os
 
-from utils import to_int
+from .utils import to_int
 
 KEY = os.getenv("KEY", "wakscord")
 

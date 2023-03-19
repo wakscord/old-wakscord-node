@@ -2,9 +2,9 @@ import logging
 
 from aiohttp import web
 
-from modules.env import ID, KEY, OWNER
-from modules.message import Message
-from modules.task_manager import TaskManager
+from .modules.env import ID, KEY, OWNER
+from .modules.message import Message
+from .modules.task_manager import TaskManager
 
 logger = logging.getLogger("app")
 

@@ -1,6 +1,6 @@
 from typing import Any
 
-from utils import list_chunk
+from .utils import list_chunk
 
 
 class Message:

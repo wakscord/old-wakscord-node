@@ -2,9 +2,9 @@ import asyncio
 import json
 from typing import Callable
 
-from env import MAX_CONCURRENT, WAIT_CONCURRENT
-from message import Message
-from requester import Requester
+from .env import MAX_CONCURRENT, WAIT_CONCURRENT
+from .message import Message
+from .requester import Requester
 
 
 class TaskManager:

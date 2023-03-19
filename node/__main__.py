@@ -4,8 +4,8 @@ import logging
 
 from aiohttp import web
 
-from app import WakscordNode
-from modules import env
+from .app import WakscordNode
+from .modules import env
 
 
 def main():
