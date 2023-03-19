@@ -68,12 +68,22 @@ class WakscordNode(web.Application):
 
         return web.json_response({"status": "ok"})
 
-    async def route_get_deleted_webhooks(self, _: web.Request) -> web.Response:
+    async def route_get_deleted_webhooks(self, request: web.Request) -> web.Response:
+        if request.headers.get("Authorization") != f"Bearer {KEY}":
+            return web.json_response(
+                {"status": "error", "message": "Invalid key"},
+                status=401,
+            )
         return web.json_response(self.deleted_webhooks)
 
-    async def route_delete_deleted_webhooks(self, _: web.Request) -> web.Response:
-        self.deleted_webhooks = []
+    async def route_delete_deleted_webhooks(self, request: web.Request) -> web.Response:
+        if request.headers.get("Authorization") != f"Bearer {KEY}":
+            return web.json_response(
+                {"status": "error", "message": "Invalid key"},
+                status=401,
+            )
 
+        self.deleted_webhooks = []
         return web.json_response({"status": "ok"})
 
     async def request_loop(self):
