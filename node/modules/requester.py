@@ -51,9 +51,7 @@ class Requester:
                     data=self.data,
                     headers={"Content-Type": "application/json"},
                 ) as response:
-                    logger.debug(
-                        "Discord Webhook %s returned %s", key[:35], response.status
-                    )
+                    logger.debug("Webhook (%s) returned %s", key[:35], response.status)
 
                     data = await content_type(response)
 
@@ -67,7 +65,7 @@ class Requester:
 
                     if 300 > response.status >= 200:
                         logger.debug(
-                            "Message Successfully sent to Discord Webhook %s", key[:35]
+                            "Message Successfully sent to Webhook (%s)", key[:35]
                         )
                         return
 
@@ -77,7 +75,7 @@ class Requester:
 
                         retry_after: float = data["retry_after"]
                         logger.warning(
-                            "We are being rate limited. Discord Webhook %s responded with 429. Retrying in %.2f seconds.",
+                            "We are being rate limited. Webhook (%s) responded with 429. Retrying in %.2f seconds.",
                             key[:35],
                             retry_after,
                         )
@@ -91,7 +89,7 @@ class Requester:
                             self._global_limit.clear()
 
                         await asyncio.sleep(retry_after)
-                        logger.debug("Done sleeping for the rate limit. Retrying...")
+                        logger.debug("Done sleeping for the rate limit. Retrying... (%s)", key[:35])
 
                         if is_global:
                             self._global_limit.set()
