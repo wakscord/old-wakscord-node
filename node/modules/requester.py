@@ -28,10 +28,15 @@ class Requester:
         self._global_limit = asyncio.Event()
         self._global_limit.set()
 
+    def __del__(self) -> None:
+        if self.session:
+            if not self.session.closed:
+                loop = asyncio.get_event_loop()
+                loop.create_task(self.session.close())
+
     async def request(self, keys: List[str]):
         for key in keys:
             asyncio.create_task(self._request(key))
-        await self.session.close()
 
     async def _request(
         self,
