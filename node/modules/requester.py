@@ -1,7 +1,7 @@
 import logging
 
 import asyncio
-from typing import Callable, Optional
+from typing import Callable, Optional, List
 
 import aiohttp
 
@@ -20,8 +20,7 @@ async def content_type(response):
 class Requester:
     """Represents Discord Webhook request sender for wakscord data."""
 
-    def __init__(self, keys: list[str], data: str, deleted_hook: Callable):
-        self.keys = keys
+    def __init__(self, data: str, deleted_hook: Callable):
         self.data = data
         self.deleted_hook = deleted_hook
 
@@ -29,8 +28,8 @@ class Requester:
         self._global_limit = asyncio.Event()
         self._global_limit.set()
 
-    async def request(self):
-        actions = [self._request(key) for key in self.keys]
+    async def request(self, keys: List[str]):
+        actions = [self._request(key) for key in keys]
 
         await asyncio.gather(*actions)
         await self.session.close()
