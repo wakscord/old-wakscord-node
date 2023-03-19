@@ -10,7 +10,7 @@ logger = logging.getLogger("requester")
 
 async def content_type(response):
     try:
-        if response.headers.get("Content-Type") == "application/json; charset=utf-8":
+        if response.headers.get("Content-Type") == "application/json":
             return await response.json()
     except KeyError:
         logger.warning("Cloudflare related issue occurred")
