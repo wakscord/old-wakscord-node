@@ -32,10 +32,9 @@ class TaskManager:
         message: Message = await self._message_queue.get()
 
         data = json.dumps(message.data)
+        requester = Requester(data, self._deleted_hook)
         for chunk in message.get(MAX_CONCURRENT):
-            requester = Requester(chunk, data, self._deleted_hook)
-
-            await self._task_queue.put(requester.request())
+            await self._task_queue.put(requester.request(chunk))
 
         while self._task_queue.qsize() > 0:
             task = await self._task_queue.get()
