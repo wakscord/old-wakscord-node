@@ -52,7 +52,7 @@ class Requester:
                     headers={"Content-Type": "application/json"},
                 ) as response:
                     logger.debug(
-                        "Discord Webhook %s returned %s", key[:30], response.status
+                        "Discord Webhook %s returned %s", key[:35], response.status
                     )
 
                     data = await content_type(response)
@@ -65,6 +65,12 @@ class Requester:
                                     "A global rate limit bucket has been exhausted."
                                 )
 
+                    if 300 > response.status >= 200:
+                        logger.debug(
+                            "Message Successfully sent to Discord Webhook %s", key[:35]
+                        )
+                        return
+
                     if response.status == 429:
                         if not response.headers.get("Via") or isinstance(data, str):
                             logger.critical("Banned by Cloudflare more than likely.")
@@ -72,7 +78,7 @@ class Requester:
                         retry_after: float = data["retry_after"]
                         logger.warning(
                             "We are being rate limited. Discord Webhook %s responded with 429. Retrying in %.2f seconds.",
-                            key[:30],
+                            key[:35],
                             retry_after,
                         )
 
@@ -101,7 +107,7 @@ class Requester:
                     if response.status in {401, 404, 403}:
                         logger.debug(
                             "This webhook (%s) has been deleted or cannot be found.",
-                            key[:30],
+                            key[:35],
                         )
                         return self.deleted_hook(key)
 
@@ -111,7 +117,7 @@ class Requester:
                         await asyncio.sleep(retry * 10)
                     else:
                         logger.error(
-                            "HTTP Error in Webhook (%s) - %s", key[:30], response.status
+                            "HTTP Error in Webhook (%s) - %s", key[:35], response.status
                         )
 
             # This is handling exceptions from the request
@@ -129,7 +135,7 @@ class Requester:
                     await asyncio.sleep(retry * 10)
 
                 logger.error(
-                    "HTTP Error in Webhook (%s) - %s", key[:30], response.status
+                    "HTTP Error in Webhook (%s) - %s", key[:35], response.status
                 )
 
             raise RuntimeError("Unreachable code in HTTP handling")
