@@ -29,9 +29,8 @@ class Requester:
         self._global_limit.set()
 
     async def request(self, keys: List[str]):
-        actions = [asyncio.create_task(self._request(key)) for key in keys]
-
-        await asyncio.gather(*actions)
+        for key in keys:
+            asyncio.create_task(self._request(key))
         await self.session.close()
 
     async def _request(
