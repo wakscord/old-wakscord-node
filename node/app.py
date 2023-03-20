@@ -68,7 +68,10 @@ class WakscordNode(web.Application):
         logger.info("Request loop started")
 
         while True:
-            await self.task_manager.process()
+            try:
+                await self.task_manager.process()
+            except Exception as e:
+                logger.error(f"Error while processing: {e}")
 
     def deleted_hook(self, key: str):
         if key not in self.deleted_webhooks:
