@@ -1,4 +1,5 @@
 import logging
+import time
 
 from aiohttp import web
 
@@ -12,6 +13,8 @@ logger = logging.getLogger("app")
 class WakscordNode(web.Application):
     def __init__(self):
         super().__init__()
+
+        self.started_at = time.time()
 
         self.task_manager = TaskManager(deleted_hook=self.deleted_hook)
         self.deleted_webhooks = []
@@ -31,6 +34,7 @@ class WakscordNode(web.Application):
                 },
                 "processed": self.task_manager.processed,
                 "deleted": len(self.deleted_webhooks),
+                "uptime": int(time.time() - self.started_at),
             }
         )
 
