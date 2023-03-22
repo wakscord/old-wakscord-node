@@ -8,6 +8,7 @@ services:
     environment:
       - HOST=0.0.0.0
       - PORT=3000
+      - KEY=my_password
 
       - ID=1
       - OWNER=yejun#3332
