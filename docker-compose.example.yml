@@ -1,0 +1,16 @@
+services:
+  node:
+    image: minibox24/wakscord-node
+    restart: always
+    ports:
+      - 8777:3000
+
+    environment:
+      - HOST=0.0.0.0
+      - PORT=3000
+      - KEY=my_password
+
+      - ID=1
+      - OWNER=yejun#3332
+      - MAX_CONCURRENT=500
+      - WAIT_CONCURRENT=0
