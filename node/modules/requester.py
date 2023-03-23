@@ -94,7 +94,10 @@ class Requester:
                             self._global_limit.clear()
 
                         await asyncio.sleep(retry_after)
-                        logger.debug("Done sleeping for the rate limit. Retrying... (%s)", key[:35])
+                        logger.debug(
+                            "Done sleeping for the rate limit. Retrying... (%s)",
+                            key[:35],
+                        )
 
                         if is_global:
                             self._global_limit.set()
