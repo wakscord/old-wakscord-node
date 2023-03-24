@@ -11,15 +11,26 @@ logger = logging.getLogger("app")
 
 
 class WakscordNode(web.Application):
+    """Represents a wakscord node using Application in aiohttp.web
+
+    The following are the functions used by the router.
+
+    - route_index
+    - route_request
+    - route_get_deleted_webhooks
+    - route_delete_deleted_webhooks
+
+    All requests will go through this class and will forward the action.
+    """
+
     def __init__(self):
         super().__init__()
 
         self.started_at = time.time()
-
         self.task_manager = TaskManager(deleted_hook=self.deleted_hook)
         self.deleted_webhooks = []
 
-    async def route_index(self, request: web.Request) -> web.Response:
+    async def route_index(self, _: web.Request) -> web.Response:
         return web.json_response(
             {
                 "info": {
@@ -46,13 +57,13 @@ class WakscordNode(web.Application):
             )
 
         data = await request.json()
-        _keys = data["keys"]
+        keys = data["keys"]
 
         for key in data["keys"]:
             if key in self.deleted_webhooks:
-                _keys.remove(key)
+                keys.remove(key)
 
-        data["keys"] = _keys
+        data["keys"] = keys
 
         message = Message(data)
 
@@ -61,11 +72,21 @@ class WakscordNode(web.Application):
         return web.json_response({"status": "ok"})
 
     async def route_get_deleted_webhooks(self, request: web.Request) -> web.Response:
+        if request.headers.get("Authorization") != f"Bearer {KEY}":
+            return web.json_response(
+                {"status": "error", "message": "Invalid key"},
+                status=401,
+            )
         return web.json_response(self.deleted_webhooks)
 
     async def route_delete_deleted_webhooks(self, request: web.Request) -> web.Response:
-        self.deleted_webhooks = []
+        if request.headers.get("Authorization") != f"Bearer {KEY}":
+            return web.json_response(
+                {"status": "error", "message": "Invalid key"},
+                status=401,
+            )
 
+        self.deleted_webhooks = []
         return web.json_response({"status": "ok"})
 
     async def request_loop(self):

@@ -1,10 +1,11 @@
+# Reference
 import asyncio
 import logging
 
 from aiohttp import web
 
 from .app import WakscordNode
-from .modules.env import *
+from .modules import env
 
 
 def main():
@@ -19,17 +20,17 @@ def main():
 
     app.setup_routers()
 
-    logger.info(f"Starting Wakscord Node on {HOST}:{PORT}")
+    logger.info("Starting Wakscord Node on %s:%i", env.HOST, env.PORT)
 
-    logger.info(f"Node ID: {ID}")
-    logger.info(f"Node Owner: {OWNER}")
-    logger.info(f"MAX_CONCURRENT: {MAX_CONCURRENT}")
-    logger.info(f"WAIT_CONCURRENT: {WAIT_CONCURRENT}")
+    logger.info("Node ID: %s", env.ID)
+    logger.info("Node Owner: %s", env.OWNER)
+    logger.info("MAX_CONCURRENT: %i", env.MAX_CONCURRENT)
+    logger.info("WAIT_CONCURRENT: %i", env.WAIT_CONCURRENT)
 
     uvloop = None
 
     try:
-        import uvloop  # type: ignore
+        import uvloop  # pylint: disable=import-outside-toplevel
     except ImportError:
         logger.warning("uvloop not installed, using asyncio")
 
@@ -41,7 +42,7 @@ def main():
     runner = web.AppRunner(app)
     loop.run_until_complete(runner.setup())
 
-    site = web.TCPSite(runner, host=HOST, port=PORT)
+    site = web.TCPSite(runner, host=env.HOST, port=env.PORT)
 
     loop.run_until_complete(site.start())
     loop.create_task(app.request_loop())
