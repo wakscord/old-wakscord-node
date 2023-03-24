@@ -35,7 +35,6 @@ class TaskManager:
         requester = Requester(data, self._deleted_hook)
         for chunk in message.get(MAX_CONCURRENT):
             await self._task_queue.put(requester.request(chunk))
-        del requester
 
         while self._task_queue.qsize() > 0:
             task = await self._task_queue.get()
@@ -44,4 +43,5 @@ class TaskManager:
 
             await asyncio.sleep(WAIT_CONCURRENT)
 
+        del requester
         self.processed += len(message.keys)
