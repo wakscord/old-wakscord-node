@@ -1,7 +1,0 @@
-.git/
-.github/
-.gitignore
-CONTRIBUTING.md
-README.md
-Dockerfile
-pylintrc
