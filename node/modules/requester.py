@@ -1,7 +1,6 @@
-import logging
-
 import asyncio
-from typing import Callable, Optional, List
+import logging
+from typing import Callable, List
 
 import aiohttp
 
@@ -24,15 +23,8 @@ class Requester:
         self.data = data
         self.deleted_hook = deleted_hook
 
-        self.session: Optional[aiohttp.ClientSession] = None
         self._global_limit = asyncio.Event()
         self._global_limit.set()
-
-    def __del__(self) -> None:
-        if self.session:
-            if not self.session.closed:
-                loop = asyncio.get_event_loop()
-                loop.create_task(self.session.close())
 
     async def request(self, keys: List[str]):
         for key in keys:
@@ -43,15 +35,14 @@ class Requester:
         key: str,
         retry: int = 5,
     ):
-        if not self.session:
-            self.session = aiohttp.ClientSession()
+        session = aiohttp.ClientSession()
 
         if not self._global_limit.is_set():
             await self._global_limit.wait()
 
         for tries in range(retry):
             try:
-                async with self.session.post(
+                async with session.post(
                     f"https://discord.com/api/webhooks/{key}",
                     data=self.data,
                     headers={"Content-Type": "application/json"},
@@ -72,7 +63,8 @@ class Requester:
                         logger.debug(
                             "Message Successfully sent to Webhook (%s)", key[:35]
                         )
-                        return
+
+                        break
 
                     if response.status == 429:
                         if not response.headers.get("Via") or isinstance(data, str):
@@ -115,7 +107,10 @@ class Requester:
                             "This webhook (%s) has been deleted or cannot be found.",
                             key[:35],
                         )
-                        return self.deleted_hook(key)
+
+                        self.deleted_hook(key)
+
+                        break
 
                     # Discord Server Error
                     if response.status >= 500:
@@ -145,3 +140,5 @@ class Requester:
                 )
 
             raise RuntimeError("Unreachable code in HTTP handling")
+
+        await session.close()
