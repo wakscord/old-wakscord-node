@@ -28,7 +28,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           push: true
-          tags: minibox24/wakscord-node:latest
+          tags: minibox24/wakscord-node:legacy
           platforms: |
             linux/amd64
             linux/arm64
