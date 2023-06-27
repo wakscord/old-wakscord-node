@@ -9,6 +9,7 @@ class Message:
     def __init__(self, data):
         self.data = data["data"]
         self.keys = data["keys"]
+        self.proxies = data["proxies"]
 
     def get(self, chunk: int) -> list[list[Any]]:
         return list_chunk(self.keys, chunk)

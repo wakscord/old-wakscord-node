@@ -19,7 +19,8 @@ async def content_type(response):
 class Requester:
     """Represents Discord Webhook request sender for wakscord data."""
 
-    def __init__(self, data: str, deleted_hook: Callable):
+    def __init__(self, proxies: list[str], data: str, deleted_hook: Callable):
+        self.proxies = proxies
         self.data = data
         self.deleted_hook = deleted_hook
 
@@ -27,15 +28,20 @@ class Requester:
         self._global_limit.set()
 
     async def request(self, keys: List[str]):
-        for key in keys:
-            asyncio.create_task(self._request(key))
+        for index, key in enumerate(keys):
+            proxy = self.proxies[index % len(self.proxies)]
+
+            asyncio.create_task(self._request(proxy, key))
 
     async def _request(
         self,
+        proxy: str,
         key: str,
         retry: int = 5,
     ):
-        session = aiohttp.ClientSession()
+        session = aiohttp.ClientSession(
+            skip_auto_headers=["User-Agent", "Accept", "Accept-Encoding"]
+        )
 
         if not self._global_limit.is_set():
             await self._global_limit.wait()
@@ -46,6 +52,7 @@ class Requester:
                     f"https://discord.com/api/webhooks/{key}",
                     data=self.data,
                     headers={"Content-Type": "application/json"},
+                    proxy=proxy,
                 ) as response:
                     logger.debug("Webhook (%s) returned %s", key[:35], response.status)
 
